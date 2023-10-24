@@ -35,11 +35,3 @@ lim_mag_sky = lim_mag_simplified(skyglow)
 lim_mag_moon = lim_mag_simplified(moon)
 lim_mag_light_pollution = lim_mag_simplified(light_pollution)
 print(lim_mag_sky, lim_mag_moon, lim_mag_light_pollution)
-
-
-import matplotlib.pyplot as plt
-
-x = np.linspace(10, 30, 50)
-y = lim_mag(x)
-plt.scatter(x, y)
-plt.show()
