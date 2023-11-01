@@ -24,8 +24,8 @@ def threeXPlusOne_outer(x):
 
 def list_index(list):
     my_list = []
-    for i in range(len(list)):
-        my_list.append(len(list) - i)
+    for i in range(1, len(list)+1):
+        my_list.append(i)
     return my_list
 
 def plot_steps(times):
@@ -33,6 +33,6 @@ def plot_steps(times):
         step, sequence = threeXPlusOne_outer(i)
         plt.plot(list_index(sequence), sequence, '-o')
     plt.show()
-
+    
 plot_steps(30)
 
