@@ -34,5 +34,19 @@ def plot_steps(times):
         plt.plot(list_index(sequence), sequence, '-o')
     plt.show()
     
-plot_steps(30)
+def plot_hist(times):
+    digit_counts = {digit: 0 for digit in range(1, 10)}
+    for i in range(1, times+1):
+        step, sequence = threeXPlusOne_outer(i)
+        leading_digits = [int(str(abs(num))[0]) for num in sequence]
+        digit_counts = {digit: digit_counts[i] + leading_digits.count(digit) for digit in range(1, 10)}
+    plt.bar(digit_counts.keys(), digit_counts.values(), tick_label=digit_counts.keys())  
+    plt.set_xlabel("Leading Digit")
+    plt.set_ylabel("Frequency")
+    plt.set_title("Histogram of Leading Digits")
+    plt.show()
+            
+    
+
+
 
