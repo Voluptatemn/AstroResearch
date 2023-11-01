@@ -40,10 +40,13 @@ def plot_hist(times):
         step, sequence = threeXPlusOne_outer(i)
         leading_digits = [int(str(abs(num))[0]) for num in sequence]
         digit_counts = {digit: digit_counts[digit] + leading_digits.count(digit) for digit in range(1, 10)}
-    plt.bar(digit_counts.keys(), digit_counts.values())  
+    total = sum(digit_counts.values())
+    plt.bar(digit_counts.keys(), digit_counts.values()) 
+    for key in digit_counts.keys():
+        plt.text(x = key - 0.4, y = digit_counts[key] + 5 , s = f"{round(digit_counts[key] / total * 100, 2)}%" , fontdict=dict(fontsize=10))
     plt.show()
-            
-plot_hist(100)
+
+
 
 
 
