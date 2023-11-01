@@ -31,7 +31,7 @@ def list_index(list):
 def plot_steps(times):
     for i in range(1, times+1):
         step, sequence = threeXPlusOne_outer(i)
-        plt.scatter(list_index(sequence), sequence)
+        plt.plot(list_index(sequence), sequence, '-o')
     plt.show()
 
 plot_steps(30)
