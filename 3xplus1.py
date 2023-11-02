@@ -28,24 +28,27 @@ def list_index(list):
         my_list.append(i)
     return my_list
 
-def plot_steps(times):
+def plot_steps(times, fignum = 1):
+    fig = plt.figure(fignum)
+    ax = fig.gca()
     for i in range(1, times+1):
         step, sequence = threeXPlusOne_outer(i)
-        plt.plot(list_index(sequence), sequence, '-o')
-    plt.show()
+        ax.plot(list_index(sequence), sequence, '-o')
+    fig.show()
     
 def plot_hist(times, fignum = 1):
     fig = plt.figure(fignum)
+    ax = fig.gca()
     digit_counts = {digit: 0 for digit in range(1, 10)}
     for i in range(1, times+1):
         step, sequence = threeXPlusOne_outer(i)
         leading_digits = [int(str(abs(num))[0]) for num in sequence]
         digit_counts = {digit: digit_counts[digit] + leading_digits.count(digit) for digit in range(1, 10)}
     total = sum(digit_counts.values())
-    fig.bar(digit_counts.keys(), digit_counts.values()) 
+    ax.bar(digit_counts.keys(), digit_counts.values()) 
     for key in digit_counts.keys():
         plt.text(x = key - 0.4, y = digit_counts[key] + 5 , s = f"{round(digit_counts[key] / total * 100, 2)}%" , fontdict=dict(fontsize=10))
-    fig.show(block=False)
+    fig.show()
 
 
 
