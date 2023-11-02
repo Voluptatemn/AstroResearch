@@ -34,17 +34,18 @@ def plot_steps(times):
         plt.plot(list_index(sequence), sequence, '-o')
     plt.show()
     
-def plot_hist(times):
+def plot_hist(times, fignum = 1):
+    fig = plt.figure(fignum)
     digit_counts = {digit: 0 for digit in range(1, 10)}
     for i in range(1, times+1):
         step, sequence = threeXPlusOne_outer(i)
         leading_digits = [int(str(abs(num))[0]) for num in sequence]
         digit_counts = {digit: digit_counts[digit] + leading_digits.count(digit) for digit in range(1, 10)}
     total = sum(digit_counts.values())
-    plt.bar(digit_counts.keys(), digit_counts.values()) 
+    fig.bar(digit_counts.keys(), digit_counts.values()) 
     for key in digit_counts.keys():
         plt.text(x = key - 0.4, y = digit_counts[key] + 5 , s = f"{round(digit_counts[key] / total * 100, 2)}%" , fontdict=dict(fontsize=10))
-    plt.show()
+    fig.show(block=False)
 
 
 
