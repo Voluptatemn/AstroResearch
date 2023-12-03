@@ -1,7 +1,7 @@
 import numpy as np
 
 def finding_targ_magnitude(targ_counts, ref_counts, ref_mag):
-    return ref_mag - 2.5 * np.log(targ_counts/ref_counts)
+    return ref_mag - 2.5 * np.log10(targ_counts/ref_counts)
 
 targ_count = 22373
 ref_counts = [5619, 2364, 27397, 9500, 11008]
