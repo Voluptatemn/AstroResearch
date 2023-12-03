@@ -22,13 +22,13 @@ driver.get(YSEpath)
 driver.find_element(By.NAME, "username").send_keys(username)
 driver.find_element(By.NAME, "password").send_keys(password)
 driver.find_element(By.XPATH, '/html/body/div/div[2]/form/div[3]/div/button').click()
-# table = driver.find_element(By.CLASS_NAME, 'table table-bordered table-hover')
 
-try:
-    myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CLASS_NAME, 'table table-bordered table-hover')))
-    print("Page is ready!")
-except TimeoutException:
-    print ("Loading took too much time!")
+WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.ID, "k2_transient_tbl")))
+scoreCardHTML = driver.page_source
+print(scoreCardHTML)
+
+driver.close()
+
     
 # url = "https://ziggy.ucolick.org/yse/dashboard/"
 # r = requests.get(url)
