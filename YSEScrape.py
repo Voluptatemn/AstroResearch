@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 import requests
@@ -17,7 +19,14 @@ username = "hstacey"
 password = "CDK700@Thacher"
 delay = 100
 
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome('/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome')
+# service = Service(executable_path="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome")
+# options = webdriver.ChromeOptions()
+# driver = webdriver.Chrome(service=service, options=options)
+# options = webdriver.ChromeOptions()
+# options.add_argument("--headless=new")
+
+driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.get(YSEpath)
 driver.find_element(By.NAME, "username").send_keys(username)
 driver.find_element(By.NAME, "password").send_keys(password)
