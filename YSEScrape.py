@@ -71,7 +71,6 @@ session = requests.Session()
 session.auth = (username, password)
 
 response = session.get(api)
-print(response)
 session.close()
 
 
