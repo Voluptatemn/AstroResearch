@@ -1,61 +1,8 @@
-# from selenium import webdriver
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.chrome.service import Service
-# from webdriver_manager.chrome import ChromeDriverManager
-# from selenium.common.exceptions import TimeoutException
-# from selenium.webdriver.common.by import By
-# import requests
-# from bs4 import BeautifulSoup
-# from selenium import webdriver
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.common.exceptions import TimeoutException
-# from selenium.webdriver.common.by import By
-# import requests
-# from bs4 import BeautifulSoup
-
-# YSEpath = "https://ziggy.ucolick.org/yse/login/?next=/yse/dashboard/"
-
-# payload = {
-#     'username': "hstacey",
-#     'password': "CDK700@Thacher"
-# }
-
-# username = "hstacey"
-# password = "CDK700@Thacher"
-# delay = 100
-
-# driver = webdriver.Chrome()
-# driver.get(YSEpath)
-# driver.find_element(By.NAME, "username").send_keys(username)
-# driver.find_element(By.NAME, "password").send_keys(password)
-# driver.find_element(By.XPATH, '/html/body/div/div[2]/form/div[3]/div/button').click()
-
-# WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.ID, "k2_transient_tbl")))
-# scoreCardHTML = driver.page_source
-# print(scoreCardHTML)
-
-# driver.close()
-
-    
-# # url = "https://ziggy.ucolick.org/yse/dashboard/"
-# # r = requests.get(url)
-# # parser = BeautifulSoup(r.content, "html.parser")
-# # table = parser.find("table")
-
-# # import mechanize
-# # from bs4 import BeautifulSoup
-# # import urllib3
-# # import http.cookiejar
-
-# # cj = http.cookiejar.CookieJar()
-# # br = mechanize.Browser()
-# # br.set_cookiejar(cj)
-# # br.open(YSEpath)
-
 import requests
-from bs4 import BeautifulSoup
+
+file = open("ysescrapingsetting.txt", "r+")
+content = file.read()
+page_starting = content
 
 username = "hstacey"
 password = "CDK700@Thacher"
@@ -65,14 +12,33 @@ payload = {
     'password': password
 }
 
-api = 'https://ziggy.ucolick.org/yse/api/'
+api = 'https://ziggy.ucolick.org/yse/api/transients/'
+
+if page_starting != '0':
+    api = page_starting
 
 session = requests.Session()
 session.auth = (username, password)
 
-response = session.get(api)
-session.close()
+response = session.get(api).json()
+print(int(response['results'][0]['name'][:4]))
 
+while response['next'] != None:
+    
+    if page_starting == '0':
+        year = int(response['results'][0]['name'][:4])
+        print(response['previous'])
+        if year == 2023:
+            file.truncate(0)
+            file.write(response['previous'])
+            file.close()
+            break
+    '''
+    Do something
+    '''
+    response = session.get(response['next']).json()
+
+session.close()
 
 
 
