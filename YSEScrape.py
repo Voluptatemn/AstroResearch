@@ -21,22 +21,20 @@ session = requests.Session()
 session.auth = (username, password)
 
 response = session.get(api).json()
-print(int(response['results'][0]['name'][:4]))
-abandon_list = ["kait", "9LYS", "PS17", "10AY", "10CY"]
 while response['next'] != None:
     
-    year = response['results'][0]['name'][:4]
-    try:
-        year = int(year)
-    except:
-        response = session.get(response['next']).json()
-        continue
-    print(response['previous'])
-    if year == 2023:
-        file.truncate(0)
-        file.write(response['previous'])
-        file.close()
-        break
+    # year = response['results'][0]['name'][:4]
+    # try:
+    #     year = int(year)
+    # except:
+    #     response = session.get(response['next']).json()
+    #     continue
+    # print(response['previous'])
+    # if year == 2023:
+    #     file.truncate(0)
+    #     file.write(response['previous'])
+    #     file.close()
+    #     break
     '''
     Do something
     '''
