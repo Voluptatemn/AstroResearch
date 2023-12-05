@@ -56,6 +56,7 @@ while response['previous'] != None:
 
 session.close()
 
+print(potential_supernova)
 
 
 
