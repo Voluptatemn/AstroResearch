@@ -14,7 +14,6 @@ recent_discovery = 7 # days max
 today = DT.date.today() - DT.timedelta(days=recent_discovery)
 date_string = today.strftime("%Y%m%d")
 date_int = int(date_string)
-print(date_int)
 
 follow_up_request = True # prioritize follow up requested 
 
