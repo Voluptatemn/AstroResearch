@@ -36,11 +36,12 @@ response = session.get(api).json()
 while response['previous'] != None:
     
     results = response['results']
-    supernovea_date = int(results[0]['disc_date'][:10].replace('-', ''))
+    supernovea_date = int(results[-1]['disc_date'][:10].replace('-', ''))
     if supernovea_date >= date_int:
         for i in range (len(results)):
-                
+            
             result = results[i]
+            print(result['name'])
             try:
                 if result['redshift'] >= max_redshift:
                     continue
