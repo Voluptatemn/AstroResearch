@@ -50,7 +50,7 @@ while response['previous'] != None:
             except TypeError:
                 continue
     else:
-        response = session.get(response['previous']).json()
+        break
    
     response = session.get(response['previous']).json()
 
