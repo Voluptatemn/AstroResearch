@@ -41,12 +41,12 @@ while response['previous'] != None:
         for i in range (len(results)):
                 
             result = results[i]
-                
             try:
                 if result['redshift'] >= max_redshift:
                     continue
                 if result['dec'] <= min_declination:
                     continue
+                potential_supernova.append(result['name'])
             except TypeError:
                 continue
     else:
