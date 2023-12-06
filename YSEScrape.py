@@ -33,6 +33,10 @@ session = requests.Session()
 session.auth = (username, password)
 
 response = session.get(api).json()
+
+while response['next'] != None:
+    response = session.get(response['next']).json()
+
 while response['previous'] != None:
     
     results = response['results']
