@@ -19,7 +19,7 @@ for i in range (len(ref_counts)):
 targ_flux = np.array(targ_flux)
 print(np.mean(targ_flux), np.std(targ_flux))
 
-Aeff = 0.7
+Aeff = np.pi * np.power((0.7/2), 2)
 c = 299792458
 h = 6.62607015 * (10 ** -34)
 photon_per_sec = targ_flux * Aeff * 0.47 * (703-545) * (10 ** -9) / c / h
