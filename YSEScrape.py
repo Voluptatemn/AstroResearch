@@ -74,7 +74,7 @@ while response['previous'] != None:
                     'redshift': redshift,
                     'disc_date': result['disc_date']
                 }
-                potential_supernova.append(result['name'])
+                potential_supernova.append(supernova_dict)
             except TypeError:
                 continue
             except requests.exceptions.MissingSchema:
