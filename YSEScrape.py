@@ -37,11 +37,12 @@ response = session.get(api).json()
 while response['next'] != None:
     response = session.get(response['next']).json()
 
+first_encounter = True
 while response['previous'] != None:
-    
+
     results = response['results']
-    supernovea_date = int(results[-1]['disc_date'][:10].replace('-', ''))
-    if supernovea_date >= date_int:
+    supernovea_created_date = int(results[-1]['created_date'][:10].replace('-', ''))
+    if supernovea_created_date >= date_int:
         for i in range (len(results)):
             
             result = results[i]
@@ -62,6 +63,9 @@ while response['previous'] != None:
                 magnitude = result['non_detect_limit']
                 if magnitude < magnitude_min or magnitude > magnitude_max:
                     continue
+                supernova_discovery_date = int(result['disc_date'][:10].replace('-', ''))
+                if supernovea_created_date < date_int:
+                    continue
                 supernova_dict = {
                     'name': result['name'],
                     'ra': result['ra'],
@@ -76,7 +80,11 @@ while response['previous'] != None:
             except requests.exceptions.MissingSchema:
                 continue
     else:
-        break
+        if first_encounter:
+            response = session.get(response['previous']).json()
+            first_encounter = False
+        else:
+            break
    
     response = session.get(response['previous']).json()
 
