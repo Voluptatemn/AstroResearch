@@ -49,12 +49,12 @@ while response['previous'] != None:
             try:
                 if result['redshift'] == None:
                     host = session.get(result['host']).json()
-                    if host['redshift'] >= max_redshift:
+                    if host['redshift'] > max_redshift:
                         continue
                 else:
-                    if result['redshift'] >= max_redshift:
+                    if result['redshift'] > max_redshift:
                         continue
-                if result['dec'] <= min_declination:
+                if result['dec'] < min_declination:
                     continue
                 magnitude = result['non_detect_limit']
                 if magnitude < magnitude_min or magnitude > magnitude_max:
