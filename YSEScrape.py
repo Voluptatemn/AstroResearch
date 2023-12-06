@@ -43,12 +43,22 @@ while response['previous'] != None:
             result = results[i]
             print(result['name'])
             try:
-                if result['redshift'] >= max_redshift:
-                    continue
+                if result['redshift'] == None:
+                    host = session.get(result['host']).json()
+                    if host['redshift'] >= max_redshift:
+                        continue
+                else:
+                    if result['redshift'] >= max_redshift:
+                        continue
                 if result['dec'] <= min_declination:
+                    continue
+                magnitude = result['non_detect_limit']
+                if magnitude < magnitude_min or magnitude > magnitude_max:
                     continue
                 potential_supernova.append(result['name'])
             except TypeError:
+                continue
+            except requests.exceptions.MissingSchema:
                 continue
     else:
         break
