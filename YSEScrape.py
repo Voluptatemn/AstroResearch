@@ -47,18 +47,29 @@ while response['previous'] != None:
             result = results[i]
             print(result['name'])
             try:
-                if result['redshift'] == None:
+                redshift = result['redshift']
+                if redshift == None:
                     host = session.get(result['host']).json()
-                    if host['redshift'] > max_redshift:
+                    redshift = host['redshift']
+                    if redshift > max_redshift:
                         continue
                 else:
-                    if result['redshift'] > max_redshift:
+                    if redshift > max_redshift:
                         continue
-                if result['dec'] < min_declination:
+                dec = result['dec']
+                if dec < min_declination:
                     continue
                 magnitude = result['non_detect_limit']
                 if magnitude < magnitude_min or magnitude > magnitude_max:
                     continue
+                supernova_dict = {
+                    'name': result['name'],
+                    'ra': result['ra'],
+                    'dec': dec,
+                    'magnitude': magnitude,
+                    'redshift': redshift,
+                    'disc_date': result['disc_date']
+                }
                 potential_supernova.append(result['name'])
             except TypeError:
                 continue
