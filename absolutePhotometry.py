@@ -3,11 +3,11 @@ import numpy as np
 def finding_targ_magnitude(targ_counts, ref_counts, ref_mag):
     return ref_mag - 2.5 * np.log10(targ_counts/ref_counts)
 
-def mag_to_flux(mag):
-    return 3631 * (10 ** (-0.4*mag))
+def mag_to_flux(mag, zp_mag = 24.76):
+    return 3631 * (10 ** (-0.4*(mag - zp_mag)))
 
 def jy_to_W(flux):
-    return flux * (10 ** 26)
+    return flux * (10 ** -26)
 
 targ_count = 22373
 ref_counts = [5619, 2364, 27397, 9500, 11008]
