@@ -145,7 +145,8 @@ if __name__ == "__main__":
                 if line.startswith('new_api'):
                     new_api = line[9:]
                     worm.api = new_api
-                    worm.log()
+                    break
+            worm.log()
             
 
 
