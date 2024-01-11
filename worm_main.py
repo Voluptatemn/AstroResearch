@@ -9,7 +9,6 @@ def add_cron_job(command, user = "Thacher", schedule = '0 * * * *'):
 
     cron.write()
 
-yse_worm = YSE_worm()
-add_cron_job(command = f'python -c "from YSEScrape import YSE_worm; YSE_worm.scrape()"')
+command = '0 * * * * /path/to/your/function/script.sh > logfile.log 2>&1'
 
 

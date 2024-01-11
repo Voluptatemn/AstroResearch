@@ -25,6 +25,10 @@ class YSE_worm:
     
     def scrape(self):
         
+        current_time = DT.datetime.now()
+        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+        print("Current time:", formatted_time)
+        
         start_time = time.time()
     
         potential_supernova = []
@@ -40,8 +44,7 @@ class YSE_worm:
         while response['next'] != None:
             new_api = response['next']
             response = session.get(response['next']).json()
-        print("Successfully go to the end of the page")
-        print("Supernova names indicate the programming is looping through the potential supernova")
+
         first_encounter = True
         while response['previous'] != None:
             
@@ -54,7 +57,7 @@ class YSE_worm:
                 for i in range (len(results)):
                     
                     result = results[i]
-                    print(result['name'])
+                    # print(result['name'])
                     try:
                         # check redshift if greater than the maxmimum redshift
                         redshift = result['redshift']
@@ -107,8 +110,6 @@ class YSE_worm:
             response = session.get(response['previous']).json()
 
         session.close()
-
-        print(potential_supernova)
         
         end_time = time.time()
         elapsed_time_seconds = end_time - start_time
@@ -118,6 +119,16 @@ class YSE_worm:
         print(f"Job complete, Elapsed time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")
         
         return potential_supernova, new_api
+    
+    def log(self):
+        potential_supernova, new_api = self.scrape()
+        with open('/path/to/log_file.log', 'a') as f:
+            f.write(f"Potential_supernova: {potential_supernova}\n")
+            f.write(f"new_api: {new_api}\n")
+            
+if __name__ == "__main__":
+    worm = YSE_worm()
+    worm.scrape()
 
 
 
