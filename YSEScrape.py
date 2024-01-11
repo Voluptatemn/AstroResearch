@@ -144,7 +144,6 @@ if __name__ == "__main__":
             for line in file:
                 if line.startswith('new_api'):
                     new_api = line[9:]
-                    print(new_api)
                     worm.api = new_api
                     worm.log()
             
