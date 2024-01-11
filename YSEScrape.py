@@ -122,7 +122,7 @@ class YSE_worm:
     
     def log(self):
         potential_supernova, new_api = self.scrape()
-        with open('/path/to/log_file.log', 'a') as f:
+        with open('log_file.log', 'a') as f:
             f.write(f"Potential_supernova: {potential_supernova}\n")
             f.write(f"new_api: {new_api}\n")
             

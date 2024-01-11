@@ -9,6 +9,7 @@ def add_cron_job(command, user = "Thacher", schedule = '0 * * * *'):
 
     cron.write()
 
-command = '0 * * * * /path/to/your/function/script.sh > logfile.log 2>&1'
+command = '0 * * * * YSEScrape.py > logfile.log 2>&1'
+add_cron_job(command=command)
 
 
