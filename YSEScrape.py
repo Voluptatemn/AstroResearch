@@ -26,20 +26,14 @@ class YSE_worm:
         return date_int
     
     def scrape(self):
-        
-        current_time = DT.datetime.now()
-        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-        print("Current time:", formatted_time)
-        
-        start_time = time.time()
-    
+            
         potential_supernova = []
 
         session = requests.Session()
         session.auth = (self.username, self.password)
 
         response = session.get(self.api).json()
-        print("Connect successfully")
+        # print("Connect successfully")
         
         new_api = self.api
         # goes to the back of the sequence if not in the back right now
@@ -112,21 +106,28 @@ class YSE_worm:
             response = session.get(response['previous']).json()
 
         session.close()
+         
+        return potential_supernova, new_api
+    
+    def log(self):
+        
+        start_time = time.time()
+        
+        current_time = DT.datetime.now()
+        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        potential_supernova, new_api = self.scrape()
         
         end_time = time.time()
         elapsed_time_seconds = end_time - start_time
         elapsed_minutes = int(elapsed_time_seconds // 60)
         elapsed_seconds = int(elapsed_time_seconds % 60)
-
-        print(f"Job complete, Elapsed time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")
         
-        return potential_supernova, new_api
-    
-    def log(self):
-        potential_supernova, new_api = self.scrape()
         with open(self.log_file_path, 'a') as f:
+            f.write(f"Current time: {formatted_time}\n")
             f.write(f"Potential_supernova: {potential_supernova}\n")
             f.write(f"new_api: {new_api}\n")
+            f.write(f"Job time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")
             
     def is_log_file_empty(self):
         return os.path.getsize(self.log_file_path) == 0
