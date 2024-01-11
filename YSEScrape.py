@@ -1,10 +1,11 @@
 import requests
 import datetime as DT
 import time 
+import os
 
 class YSE_worm:
     
-    def __init__(self, max_redshift = 0.015, magnitude_max = 19, magnitude_min = 12, min_declination = -10, recent_discovery = 7, follow_up_request = True, username = "hstacey", password = "CDK700@Thacher", api = 'https://ziggy.ucolick.org/yse/api/transients/?offset=152400') -> None:
+    def __init__(self, max_redshift = 0.015, magnitude_max = 19, magnitude_min = 12, min_declination = -10, recent_discovery = 7, follow_up_request = True, username = "hstacey", password = "CDK700@Thacher", api = 'https://ziggy.ucolick.org/yse/api/transients/?offset=152400', log_file_path = 'log_file.log') -> None:
         
         self.max_redshift = max_redshift
         self.magnitude_max = magnitude_max
@@ -15,6 +16,7 @@ class YSE_worm:
         self.username = username
         self.password = password
         self.api = api
+        self.log_file_path = log_file_path
         
     def dates(self):
     
@@ -122,13 +124,31 @@ class YSE_worm:
     
     def log(self):
         potential_supernova, new_api = self.scrape()
-        with open('log_file.log', 'a') as f:
+        with open(self.log_file_path, 'a') as f:
             f.write(f"Potential_supernova: {potential_supernova}\n")
             f.write(f"new_api: {new_api}\n")
             
+    def is_log_file_empty(self):
+        return os.path.getsize(self.log_file_path) == 0
+            
 if __name__ == "__main__":
+    
     worm = YSE_worm()
-    worm.scrape()
+    
+    if worm.is_log_file_empty():
+        worm.log()
+    else:
+        # Open a file for reading
+        with open('log_file.log', 'r') as file:
+            # Read the entire content of the file
+            for line in file:
+                if line.startswith('new_api'):
+                    new_api = line[9:]
+                    print(new_api)
+                    worm.api = new_api
+                    worm.log()
+            
+
 
 
 
