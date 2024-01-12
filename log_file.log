@@ -1,4 +1,0 @@
-Current time: 2024-01-10 21:50:28
-Potential_supernova: [{'name': '2024ix', 'ra': 183.96419999999998, 'dec': 13.11595, 'magnitude': 17.5, 'redshift': 0.001183, 'disc_date': '2024-01-05T11:02:24Z'}, {'name': '2024jz', 'ra': 233.270175, 'dec': -1.6251777777777778, 'magnitude': 18.29, 'redshift': 0.0093, 'disc_date': '2024-01-05T15:23:29.184000Z'}]
-new_api: https://ziggy.ucolick.org/yse/api/transients/?offset=152400
-Job time: 3 minutes and 41 seconds
