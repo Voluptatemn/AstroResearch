@@ -2,8 +2,7 @@ from crontab import CronTab
 from YSEScrape import YSE_worm
 
 def add_cron_job(command, schedule = '0 * * * *'):
-    cron = CronTab(user=True)  # Specify the username if necessary
-
+    cron = CronTab(user=True)  
     job = cron.new(command=command)
     job.setall(schedule)
 
