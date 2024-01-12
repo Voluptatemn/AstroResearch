@@ -5,7 +5,7 @@ import os
 
 class YSE_worm:
     
-    def __init__(self, max_redshift = 0.015, magnitude_max = 19, magnitude_min = 12, min_declination = -10, recent_discovery = 7, follow_up_request = True, username = "hstacey", password = "CDK700@Thacher", api = 'https://ziggy.ucolick.org/yse/api/transients/?offset=152400', log_file_path = 'log_file.log') -> None:
+    def __init__(self, max_redshift = 0.015, magnitude_max = 19, magnitude_min = 12, min_declination = -10, recent_discovery = 7, follow_up_request = True, username = "hstacey", password = "CDK700@Thacher", api = 'https://ziggy.ucolick.org/yse/api/transients/?offset=152400', log_file_path = '/Users/qiangangsamwang/Documents/GitHub/AstroResearch/log_file.log') -> None:
         
         self.max_redshift = max_redshift
         self.magnitude_max = magnitude_max

@@ -1,5 +1,4 @@
 from crontab import CronTab
-from YSEScrape import YSE_worm
 
 def add_cron_job(command, schedule = '0 * * * *'):
     cron = CronTab(user=True)  
@@ -8,7 +7,7 @@ def add_cron_job(command, schedule = '0 * * * *'):
 
     cron.write()
 
-command = '0 * * * * YSEScrape.py > logfile.log 2>&1'
+command = '/Users/qiangangsamwang/opt/anaconda3/bin/python3 YSEScrape.py > /Users/qiangangsamwang/Documents/GitHub/AstroResearch/log_file.log 2>&1'
 add_cron_job(command=command)
 
 
