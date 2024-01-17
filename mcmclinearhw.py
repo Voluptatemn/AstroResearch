@@ -145,7 +145,27 @@ elapsed_seconds = int(elapsed_time_seconds % 60)
 print(f"Job time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")    
 
 
+start_pointing = [2.416905312902787, 3.9074407035248218]
 
+def linear_model(x, m = start_pointing[0], b = start_pointing[1]):
+    return m*x + b
+
+# Plotting with error bars
+plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
+x_fit = np.linspace(min(x), max(x), 100)
+y_fit = linear_model(x_fit)
+plt.plot(x_fit, y_fit, label='Fit', color='red')
+
+# Adding labels and title
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.title('Plot with Error Bars')
+
+# Displaying legend
+plt.legend()
+
+# Display the plot
+plt.show()
 
 
 
