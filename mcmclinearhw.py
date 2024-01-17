@@ -21,6 +21,8 @@ x = np.array(x)
 y = np.array(y)
 yerr = np.array(yerr)
 
+print("Reading finished.")
+
 # # Plotting with error bars
 # plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
 
@@ -122,7 +124,7 @@ def metropolis_hasting(start_pointing, num_of_tracktors = 0, m_mean = 0, m_std =
             else:
                 counts[current_pointing_tuple] = 1
 
-    
+    print("Metropolis fasting complete")
     return counts
 
 start_pointing = np.array((2.0, 5.0))
