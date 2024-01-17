@@ -127,6 +127,7 @@ def metropolis_hasting(start_pointing, num_of_tracktors = 0, m_mean = 0, m_std =
     print("Metropolis fasting complete")
     return counts
 
+# start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
 counts = metropolis_hasting(start_pointing)
 curr_max = 0
