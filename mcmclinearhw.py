@@ -40,7 +40,13 @@ yerr = np.array(yerr)
 # -2 ln p({x, y, sigma} | {m, b}) = np.sum((y - M) ** 2 / sigma) = chisquare 
 possibility_of_model = 1
 
-def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr):
+def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr, fast_version = True):
+    
+    if fast_version:
+        sum = 0
+        for j in range (len(y)):
+            sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2)
+        return np.e ** (-1/2 * sum)
     sum = 0
     for j in range (len(y)):
         sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2) - np.log(yerr[j] * np.sqrt(2 * np.pi))
@@ -77,12 +83,17 @@ def possibility_of_model_given_data(m, b):
 # plt.show()
 
 # metropolis-hasting
-def metropolis_hasting(start_pointing, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting(start_pointing, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
     counts = {}
     current_pointing = start_pointing
     while (num_of_tracktors < tracktor_upper_limit):
         num_of_tracktors += 1
-        print(num_of_tracktors)
+        
+        if fast_version:
+            if num_of_tracktors % 1000000 == 0:
+                print(num_of_tracktors)
+        else:
+            print(num_of_tracktors)
         previous = possibility_of_model_given_data(current_pointing[0], current_pointing[1])
         
         # draw form distribution for interval 
