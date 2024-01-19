@@ -134,7 +134,7 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting_array(start_pointing = np.array([]), mb_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting_array(start_pointing, mb_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
     
     np.append(mb_array, start_pointing)
     
@@ -157,8 +157,9 @@ def metropolis_hasting_array(start_pointing = np.array([]), mb_array = np.array(
             np.append(mb_array, [m, b])
         
         unique_elements, counts = np.unique(mb_array, return_counts=True)
+        curr_pointing = mb_array[-1]
     
-    return mb_array, unique_elements, counts
+    return mb_array, unique_elements, counts, curr_pointing
 
 def find_max(counts):
     curr_max = 0
