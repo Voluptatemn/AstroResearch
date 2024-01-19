@@ -86,19 +86,11 @@ def possibility_of_model_given_data(m, b):
 # plt.show()
 
 # metropolis-hasting
-def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
+def metropolis_hasting(start_pointing, counts = {}, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
 
     current_pointing = start_pointing
     
     for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
-    # while (num_of_tracktors < tracktor_upper_limit):
-    #     num_of_tracktors += 1
-        
-    #     if fast_version:
-    #         if num_of_tracktors % 1000000 == 0:
-    #             print(num_of_tracktors)
-    #     else:
-    #         print(num_of_tracktors)
         previous = possibility_of_model_given_data(current_pointing[0], current_pointing[1], fast_version = fast_version)
         
         # draw form distribution for interval 
