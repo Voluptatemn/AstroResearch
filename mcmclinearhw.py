@@ -48,7 +48,7 @@ def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr, fast_versio
         sum = 0
         for j in range (len(y)):
             sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2)
-        return np.e ** (-1/2 * sum)
+        return -1/2 * sum
     sum = 0
     for j in range (len(y)):
         sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2) - np.log(yerr[j] * np.sqrt(2 * np.pi))
@@ -107,7 +107,11 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
         after = possibility_of_model_given_data(aftter_pointing[0], aftter_pointing[1])
         
         # acceptance prob
-        acceptance_prob = np.min([1.0, after/previous])
+        acceptance_prob = 0
+        if fast_version:
+            acceptance_prob = np.min([1.0, previous/after])
+        else:  
+            acceptance_prob = np.min([1.0, after/previous])
 
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
@@ -125,18 +129,22 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
                 counts[current_pointing_tuple] = 1
 
     print("Metropolis fasting complete")
-    return counts
+    return current_pointing, counts
+
+def find_max(counts):
+    curr_max = 0
+    position = []
+    for key in counts.keys():
+        frequency = counts[key]
+        if frequency > curr_max:
+            position = key
+            curr_max = frequency
+    return position, curr_max
 
 # start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
-counts = metropolis_hasting(start_pointing)
-curr_max = 0
-position = []
-for key in counts.keys():
-    frequency = counts[key]
-    if frequency > curr_max:
-        position = key
-        curr_max = frequency
+curr_pointing, counts = metropolis_hasting(start_pointing)
+position, curr_max = find_max(counts)
 print(position, curr_max)
 
 end_time = time.time()
