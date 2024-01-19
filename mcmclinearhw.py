@@ -2,9 +2,10 @@ import numpy as np
 from decimal import Decimal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import time 
+# import time 
+from tqdm import tqdm
 
-start_time = time.time()
+# start_time = time.time()
 
 x = []
 y = []
@@ -88,14 +89,16 @@ def possibility_of_model_given_data(m, b):
 def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
 
     current_pointing = start_pointing
-    while (num_of_tracktors < tracktor_upper_limit):
-        num_of_tracktors += 1
+    
+    for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
+    # while (num_of_tracktors < tracktor_upper_limit):
+    #     num_of_tracktors += 1
         
-        if fast_version:
-            if num_of_tracktors % 1000000 == 0:
-                print(num_of_tracktors)
-        else:
-            print(num_of_tracktors)
+    #     if fast_version:
+    #         if num_of_tracktors % 1000000 == 0:
+    #             print(num_of_tracktors)
+    #     else:
+    #         print(num_of_tracktors)
         previous = possibility_of_model_given_data(current_pointing[0], current_pointing[1])
         
         # draw form distribution for interval 
@@ -147,11 +150,11 @@ curr_pointing, counts = metropolis_hasting(start_pointing)
 position, curr_max = find_max(counts)
 print(position, curr_max)
 
-end_time = time.time()
-elapsed_time_seconds = end_time - start_time
-elapsed_minutes = int(elapsed_time_seconds // 60)
-elapsed_seconds = int(elapsed_time_seconds % 60)
-print(f"Job time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")    
+# end_time = time.time()
+# elapsed_time_seconds = end_time - start_time
+# elapsed_minutes = int(elapsed_time_seconds // 60)
+# elapsed_seconds = int(elapsed_time_seconds % 60)
+# print(f"Job time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")    
 
 
 start_pointing = [2.416905312902787, 3.9074407035248218]
