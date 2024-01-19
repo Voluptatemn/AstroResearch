@@ -134,10 +134,9 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting_array(start_pointing, mb_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting_array(start_pointing = np.array([]), mb_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
     
-    np.append(mb_array, start_pointing)
-    
+    mb_array = np.append(mb_array, [start_pointing])
     for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
         
         m = mb_array[-1][0]
@@ -152,14 +151,18 @@ def metropolis_hasting_array(start_pointing, mb_array = [], m_std = 1, b_std = 1
         
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
-            np.append(mb_array, [new_m, new_b])
+            mb_array = np.append(mb_array, [new_m, new_b])
         else:
-            np.append(mb_array, [m, b])
+            mb_array = np.append(mb_array, [m, b])
         
-        unique_elements, counts = np.unique(mb_array, return_counts=True)
+        # unique_elements, counts = np.unique(mb_array, return_counts=True)
         curr_pointing = mb_array[-1]
     
-    return mb_array, unique_elements, counts, curr_pointing
+    return mb_array, curr_pointing
+
+start_pointing = np.array([2.0, 5.0])
+mb_array, curr_pointing = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
+print(mb_array)
 
 def find_max(counts):
     curr_max = 0
