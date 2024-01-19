@@ -134,35 +134,39 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting_array(start_pointing = np.array([]), mb_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting_array(start_pointing = np.array([]), m_array = np.array([]), b_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
     
-    mb_array = np.append(mb_array, [start_pointing])
+    if len(start_pointing) != 0:
+        m_array = np.append(m_array, start_pointing[0])
+        b_array = np.append(b_array, start_pointing[1])
+    
     for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
         
-        m = mb_array[-1][0]
-        b = mb_array[-1][1]
+        m = m_array[-1]
+        b = b_array[-1]
         previous = possibility_of_data_given_model(m, b)
         
         new_m = np.random.normal(m, m_std)
         new_b = np.random.normal(b, b_std)
         after = possibility_of_data_given_model(new_m, new_b)
         
-        acceptance_prob = np.min([1.0, after/previous])
+        acceptance_prob = np.min([1.0, previous/after])
         
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
-            mb_array = np.append(mb_array, [new_m, new_b])
+            m_array = np.append(m_array, new_m)
+            b_array = np.append(b_array, new_b)
+            
         else:
-            mb_array = np.append(mb_array, [m, b])
+            m_array = np.append(m_array, m)
+            b_array = np.append(b_array, b)
         
         # unique_elements, counts = np.unique(mb_array, return_counts=True)
-        curr_pointing = mb_array[-1]
     
-    return mb_array, curr_pointing
+    return m_array, b_array
 
 start_pointing = np.array([2.0, 5.0])
-mb_array, curr_pointing = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
-print(mb_array)
+m_array, b_array = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
 
 def find_max(counts):
     curr_max = 0
