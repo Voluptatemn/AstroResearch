@@ -85,8 +85,8 @@ def possibility_of_model_given_data(m, b):
 # plt.show()
 
 # metropolis-hasting
-def metropolis_hasting(start_pointing, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
-    counts = {}
+def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
+
     current_pointing = start_pointing
     while (num_of_tracktors < tracktor_upper_limit):
         num_of_tracktors += 1
