@@ -134,39 +134,39 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting_array(start_pointing = np.array([]), m_array = np.array([]), b_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+# def metropolis_hasting_array(start_pointing = np.array([]), m_array = np.array([]), b_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
     
-    if len(start_pointing) != 0:
-        m_array = np.append(m_array, start_pointing[0])
-        b_array = np.append(b_array, start_pointing[1])
+#     if len(start_pointing) != 0:
+#         m_array = np.append(m_array, start_pointing[0])
+#         b_array = np.append(b_array, start_pointing[1])
     
-    for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
+#     for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
         
-        m = m_array[-1]
-        b = b_array[-1]
-        previous = possibility_of_data_given_model(m, b)
+#         m = m_array[-1]
+#         b = b_array[-1]
+#         previous = possibility_of_data_given_model(m, b)
         
-        new_m = np.random.normal(m, m_std)
-        new_b = np.random.normal(b, b_std)
-        after = possibility_of_data_given_model(new_m, new_b)
+#         new_m = np.random.normal(m, m_std)
+#         new_b = np.random.normal(b, b_std)
+#         after = possibility_of_data_given_model(new_m, new_b)
         
-        acceptance_prob = np.min([1.0, previous/after])
+#         acceptance_prob = np.min([1.0, previous/after])
         
-        if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
-            # if accept
-            m_array = np.append(m_array, new_m)
-            b_array = np.append(b_array, new_b)
+#         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
+#             # if accept
+#             m_array = np.append(m_array, new_m)
+#             b_array = np.append(b_array, new_b)
             
-        else:
-            m_array = np.append(m_array, m)
-            b_array = np.append(b_array, b)
+#         else:
+#             m_array = np.append(m_array, m)
+#             b_array = np.append(b_array, b)
         
-        # unique_elements, counts = np.unique(mb_array, return_counts=True)
+#         # unique_elements, counts = np.unique(mb_array, return_counts=True)
     
-    return m_array, b_array
+#     return m_array, b_array
 
-start_pointing = np.array([2.0, 5.0])
-m_array, b_array = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
+# start_pointing = np.array([2.0, 5.0])
+# m_array, b_array = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
 
 def find_max(counts):
     curr_max = 0
