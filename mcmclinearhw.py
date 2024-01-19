@@ -134,6 +134,32 @@ def metropolis_hasting(start_pointing, counts = {}, num_of_tracktors = 0, m_mean
     print("Metropolis fasting complete")
     return current_pointing, counts
 
+def metropolis_hasting_array(start_pointing = np.array([]), mb_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+    
+    np.append(mb_array, start_pointing)
+    
+    for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
+        
+        m = mb_array[-1][0]
+        b = mb_array[-1][1]
+        previous = possibility_of_data_given_model(m, b)
+        
+        new_m = np.random.normal(m, m_std)
+        new_b = np.random.normal(b, b_std)
+        after = possibility_of_data_given_model(new_m, new_b)
+        
+        acceptance_prob = np.min([1.0, after/previous])
+        
+        if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
+            # if accept
+            np.append(mb_array, [new_m, new_b])
+        else:
+            np.append(mb_array, [m, b])
+        
+        unique_elements, counts = np.unique(mb_array, return_counts=True)
+    
+    return mb_array, unique_elements, counts
+
 def find_max(counts):
     curr_max = 0
     position = []
