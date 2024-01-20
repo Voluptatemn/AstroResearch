@@ -3,6 +3,7 @@ from decimal import Decimal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from tqdm import tqdm
+import pandas as pd
 
 # reading the data, can be directly written in. 
 x = []
@@ -113,6 +114,36 @@ def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, trackt
 
     print("Metropolis fasting complete")
     return current_pointing, counts
+
+def metropolis_hasting(start_pointing, m_array = [], b_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+
+    current_pointing = start_pointing
+    
+    for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
+        
+        m = current_pointing[0]
+        b = current_pointing[1]
+        previous = possibility_of_data_given_model(m, b)
+        
+        # draw form distribution for interval
+        # change the m and b 
+        after_pointing = [np.random.normal(m, m_std), np.random.normal(b, b_std)]
+        after = possibility_of_data_given_model(after_pointing[0], after_pointing[1])
+        
+        # acceptance prob
+        acceptance_prob = np.min([1.0, previous/after])
+
+        if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
+            # if accept
+            m_array.append(after_pointing[0])
+            b_array.append(after_pointing[1])
+            current_pointing = after_pointing 
+        else:
+            m_array.append(m)
+            b_array.append(b)
+
+    print("Metropolis fasting complete")
+    return current_pointing, m_array, b_array
 
 # finding max in counts dict
 def find_max(counts):
