@@ -2,11 +2,9 @@ import numpy as np
 from decimal import Decimal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-# import time 
 from tqdm import tqdm
 
-# start_time = time.time()
-
+# reading the data, can be directly written in. 
 x = []
 y = []
 yerr = []
@@ -24,89 +22,76 @@ yerr = np.array(yerr)
 
 print("Reading finished.")
 
-# # Plotting with error bars
-# plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
+def plot_error(x, y, yerr):
+    # Plotting with error bars
+    plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
 
-# # Adding labels and title
-# plt.xlabel('X-axis')
-# plt.ylabel('Y-axis')
-# plt.title('Plot with Error Bars')
+    # Adding labels and title
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.title('Plot with Error Bars')
 
-# # Displaying legend
-# plt.legend()
+    # Displaying legend
+    plt.legend()
 
-# # Display the plot
-# plt.show()
+    # Display the plot
+    plt.show()
 
 # linear posterior space 
 # posterior = p({x, y, sigma} | {m, b}) * p({m, b}) / p({x, y, sigma})
 # -2 ln p({x, y, sigma} | {m, b}) = np.sum((y - M) ** 2 / sigma) = chisquare 
-possibility_of_model = 1
+# excluded constant term and pos of model and pos of data 
 
-def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr, fast_version = True):
+def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr):
     
-    if fast_version:
-        sum = 0
-        for j in range (len(y)):
-            sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2)
-        return -1/2 * sum
     sum = 0
     for j in range (len(y)):
-        sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2) - np.log(yerr[j] * np.sqrt(2 * np.pi))
-    return np.e ** (-1/2 * sum)
+        sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2)
+    return -1/2 * sum
     
-possibility_of_data = 1
+# posterior space visualization
+def posterior_space_visualization():
 
-def possibility_of_model_given_data(m, b):
-    return possibility_of_model * possibility_of_data_given_model(m, b) / possibility_of_data
+    ms = []
+    bs = []
+    posterior = []
 
-# ms = []
-# bs = []
-# posterior = []
+    for m in range (-100, 100):
+        for b in range(-100, 100):
+            ms.append(m)
+            bs.append(b)
+            posterior.append(possibility_of_data_given_model(m, b))
 
-# for m in range (-100, 100):
-#     for b in range(-100, 100):
-#         ms.append(m)
-#         bs.append(b)
-#         posterior.append(possibility_of_model_given_data(m, b))
+    # Create a 3D plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-# # Create a 3D plot
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
+    # Scatter plot
+    ax.scatter(ms, bs, posterior, c='r', marker='o')
 
-# # Scatter plot
-# ax.scatter(ms, bs, posterior, c='r', marker='o')
+    # Adding labels
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_zlabel('Z-axis')
 
-# # Adding labels
-# ax.set_xlabel('X-axis')
-# ax.set_ylabel('Y-axis')
-# ax.set_zlabel('Z-axis')
-
-# # Display the plot
-# plt.show()
+    # Display the plot
+    plt.show()
 
 # metropolis-hasting
-def metropolis_hasting(start_pointing, counts = {}, m_mean = 0, m_std = 1, b_mean = 0, b_std = 1, tracktor_upper_limit = 10 ** 8, fast_version = True):
+def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
 
     current_pointing = start_pointing
     
     for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
-        previous = possibility_of_model_given_data(current_pointing[0], current_pointing[1], fast_version = fast_version)
+        previous = possibility_of_data_given_model(current_pointing[0], current_pointing[1])
         
-        # draw form distribution for interval 
-        m_move = np.random.normal(m_mean, m_std)
-        b_move = np.random.normal(b_mean, b_std)
-        
-        # change the m and b
-        aftter_pointing = current_pointing + (m_move, b_move)
-        after = possibility_of_model_given_data(aftter_pointing[0], aftter_pointing[1], fast_version = fast_version)
+        # draw form distribution for interval
+        # change the m and b 
+        aftter_pointing = [np.random.normal(current_pointing[0], m_std), np.random.normal(current_pointing[1], b_std)]
+        after = possibility_of_data_given_model(aftter_pointing[0], aftter_pointing[1])
         
         # acceptance prob
-        acceptance_prob = 0
-        if fast_version:
-            acceptance_prob = np.min([1.0, previous/after])
-        else:  
-            acceptance_prob = np.min([1.0, after/previous])
+        acceptance_prob = np.min([1.0, previous/after])
 
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
@@ -126,40 +111,7 @@ def metropolis_hasting(start_pointing, counts = {}, m_mean = 0, m_std = 1, b_mea
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-# def metropolis_hasting_array(start_pointing = np.array([]), m_array = np.array([]), b_array = np.array([]), m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
-    
-#     if len(start_pointing) != 0:
-#         m_array = np.append(m_array, start_pointing[0])
-#         b_array = np.append(b_array, start_pointing[1])
-    
-#     for i in tqdm(range(tracktor_upper_limit), desc="Processing"):
-        
-#         m = m_array[-1]
-#         b = b_array[-1]
-#         previous = possibility_of_data_given_model(m, b)
-        
-#         new_m = np.random.normal(m, m_std)
-#         new_b = np.random.normal(b, b_std)
-#         after = possibility_of_data_given_model(new_m, new_b)
-        
-#         acceptance_prob = np.min([1.0, previous/after])
-        
-#         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
-#             # if accept
-#             m_array = np.append(m_array, new_m)
-#             b_array = np.append(b_array, new_b)
-            
-#         else:
-#             m_array = np.append(m_array, m)
-#             b_array = np.append(b_array, b)
-        
-#         # unique_elements, counts = np.unique(mb_array, return_counts=True)
-    
-#     return m_array, b_array
-
-# start_pointing = np.array([2.0, 5.0])
-# m_array, b_array = metropolis_hasting_array(start_pointing=start_pointing, tracktor_upper_limit=1000)
-
+# finding max in counts dict
 def find_max(counts):
     curr_max = 0
     position = []
@@ -175,13 +127,6 @@ start_pointing = np.array((2.0, 5.0))
 curr_pointing, counts = metropolis_hasting(start_pointing)
 position, curr_max = find_max(counts)
 print(position, curr_max)
-
-# end_time = time.time()
-# elapsed_time_seconds = end_time - start_time
-# elapsed_minutes = int(elapsed_time_seconds // 60)
-# elapsed_seconds = int(elapsed_time_seconds % 60)
-# print(f"Job time: {elapsed_minutes} minutes and {elapsed_seconds} seconds")    
-
 
 start_pointing = [2.416905312902787, 3.9074407035248218]
 
