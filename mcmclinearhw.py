@@ -83,11 +83,14 @@ def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, trackt
     current_pointing = start_pointing
     
     for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
-        previous = possibility_of_data_given_model(current_pointing[0], current_pointing[1])
+        
+        m = current_pointing[0]
+        b = current_pointing[1]
+        previous = possibility_of_data_given_model(m, b)
         
         # draw form distribution for interval
         # change the m and b 
-        aftter_pointing = [np.random.normal(current_pointing[0], m_std), np.random.normal(current_pointing[1], b_std)]
+        aftter_pointing = [np.random.normal(m, m_std), np.random.normal(b, b_std)]
         after = possibility_of_data_given_model(aftter_pointing[0], aftter_pointing[1])
         
         # acceptance prob
