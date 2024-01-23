@@ -134,7 +134,7 @@ def metropolis_hasting(start_pointing, m_array = [], b_array = [], m_std = 1, b_
 
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
-            m_array.append(after_pointing[0])
+            m_array.append(after_pointing[0]) 
             b_array.append(after_pointing[1])
             current_pointing = after_pointing 
         else:
@@ -158,8 +158,23 @@ def find_max(counts):
 # start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
 curr_pointing, counts = metropolis_hasting(start_pointing)
+current_pointing, m_array, b_array = metropolis_hasting(start_pointing)
 position, curr_max = find_max(counts)
 print(position, curr_max)
+
+def index_data_plot(data):
+    # Plotting the graph
+    plt.plot(data)
+
+    # Adding labels to the axes
+    plt.xlabel('Index')
+    plt.ylabel('Data')
+
+    # Adding a title to the plot
+    plt.title('Index vs Data')
+
+    # Display the plot
+    plt.show()
 
 start_pointing = [2.416905312902787, 3.9074407035248218]
 
