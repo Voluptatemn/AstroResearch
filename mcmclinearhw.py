@@ -1,206 +1,236 @@
 import numpy as np
 from decimal import Decimal
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from tqdm import tqdm
 import concurrent.futures
 
-# reading the data, can be directly written in. 
-x = []
-y = []
-yerr = []
+class MCMC:
 
-with open('/Users/qiangangsamwang/Documents/GitHub/AstroResearch/linear_data', 'r') as file:
-     for line in file:
-        data = [float(Decimal(number)) for number in line.split()]
-        x.append(data[0])
-        y.append(data[1])
-        yerr.append(data[2])
+    def __init__(self):
+        self.read_data()
+        self.start_pointing = [2.416905312902787, 3.9074407035248218]
+        self.start_pointing_1 = [2.265298944242751, 4.522759175246534]
+        self.start_pointing_2 = [2.576172170927121, 3.0199720233240477]
 
-x = np.array(x)
-y = np.array(y)
-yerr = np.array(yerr)
+    def read_data(self):
+        # reading the data, can be directly written in. 
+        x = []
+        y = []
+        yerr = []
 
-print("Reading finished.")
+        with open('linear_data', 'r') as file:
+            for line in file:
+                data = [float(Decimal(number)) for number in line.split()]
+                x.append(data[0])
+                y.append(data[1])
+                yerr.append(data[2])
 
-def plot_error(x, y, yerr):
-    # Plotting with error bars
-    plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
+        self.x = np.array(x)
+        self.y = np.array(y)
+        self.yerr = np.array(yerr)
 
-    # Adding labels and title
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.title('Plot with Error Bars')
+        print("Reading finished.")
 
-    # Displaying legend
-    plt.legend()
+    def plot_error(self):
+        # Plotting with error bars
+        plt.errorbar(self.x, self.y, yerr=self.yerr, fmt='o', label='Data with Error Bars')
 
-    # Display the plot
-    plt.show()
+        # Adding labels and title
+        plt.xlabel('X-axis')
+        plt.ylabel('Y-axis')
+        plt.title('Plot with Error Bars')
 
-# linear posterior space 
-# posterior = p({x, y, sigma} | {m, b}) * p({m, b}) / p({x, y, sigma})
-# -2 ln p({x, y, sigma} | {m, b}) = np.sum((y - M) ** 2 / sigma) = chisquare 
-# excluded constant term and pos of model and pos of data 
+        # Displaying legend
+        plt.legend()
 
-def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr):
-    
-    y_model = x * m + b
-    return -1/2 * np.sum(((y - y_model) ** 2) / (yerr ** 2) + 2 * np.log(yerr*np.sqrt(2 * np.pi)))
+        # Display the plot
+        plt.show()
 
-# posterior space visualization
-def posterior_space_visualization():
+    # linear posterior space 
+    # posterior = p({x, y, sigma} | {m, b}) * p({m, b}) / p({x, y, sigma})
+    # -2 ln p({x, y, sigma} | {m, b}) = np.sum((y - M) ** 2 / sigma) = chisquare 
+    # excluded constant term and pos of model and pos of data 
 
-    ms = []
-    bs = []
-    posterior = []
-
-    for m in range (-100, 100):
-        for b in range(-100, 100):
-            ms.append(m)
-            bs.append(b)
-            posterior.append(possibility_of_data_given_model(m, b))
-
-    # Create a 3D plot
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Scatter plot
-    ax.scatter(ms, bs, posterior, c='r', marker='o')
-
-    # Adding labels
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('Y-axis')
-    ax.set_zlabel('Z-axis')
-
-    # Display the plot
-    plt.show()
-
-# metropolis-hasting, dictionary way
-def metropolis_hasting_dict(start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
-
-    current_pointing = start_pointing
-    
-    for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
+    def possibility_of_data_given_model(self, m, b):
         
-        m = current_pointing[0]
-        b = current_pointing[1]
-        previous = possibility_of_data_given_model(m, b)
+        y_model = self.x * m + b
+        return -1/2 * np.sum(((self.y - y_model) ** 2) / (self.yerr ** 2))
+
+    # posterior space visualization
+    def posterior_space_visualization(self):
+
+        ms = []
+        bs = []
+        posterior = []
+
+        for m in range (-100, 100):
+            for b in range(-100, 100):
+                ms.append(m)
+                bs.append(b)
+                posterior.append(self.possibility_of_data_given_model(m, b))
+
+        # Create a 3D plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Scatter plot
+        ax.scatter(ms, bs, posterior, c='r', marker='o')
+
+        # Adding labels
+        ax.set_xlabel('X-axis')
+        ax.set_ylabel('Y-axis')
+        ax.set_zlabel('Z-axis')
+
+        # Display the plot
+        plt.show()
+
+    # metropolis-hasting, dictionary way
+    def metropolis_hasting_dict(self, start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+
+        current_pointing = start_pointing
         
-        # draw form distribution for interval
-        # change the m and b 
-        aftter_pointing = [np.random.normal(m, m_std), np.random.normal(b, b_std)]
-        after = possibility_of_data_given_model(aftter_pointing[0], aftter_pointing[1])
-        
-        # acceptance prob
-        acceptance_prob = np.min([1.0, previous/after])
-
-        if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
-            # if accept
-            aftter_pointing_tuple = tuple(aftter_pointing)
-            if aftter_pointing_tuple in counts:
-                counts[aftter_pointing_tuple] += 1
-            else:
-                counts[aftter_pointing_tuple] = 1
-            current_pointing = aftter_pointing 
-        else:
-            current_pointing_tuple = tuple(current_pointing)
-            if current_pointing_tuple in counts:
-                counts[current_pointing_tuple] += 1
-            else:
-                counts[current_pointing_tuple] = 1
-
-    print("Metropolis fasting complete")
-    return current_pointing, counts
-
-def metropolis_hasting_init(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8, walker = 10):
-    
-    return
-
-
-# metropolis-hasting, array way
-def metropolis_hasting_list(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8):
-
-    for _ in tqdm(range(tracktor_upper_limit), desc="Processing items"):
-        
-        previous = possibility_of_data_given_model(m, b)
-        
-        # draw form distribution for interval
-        # change the m and b 
-        after_m = np.random.normal(m, m_std)
-        after_b = np.random.normal(b, b_std)
-        after = possibility_of_data_given_model(after_m, after_b)
-        
-        # acceptance prob
-        acceptance_prob = np.min([1.0, previous/after])
-
-        if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
-            # if accept
-            m = after_m
-            b = after_b
+        for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
             
-        m_array.append(m)
-        b_array.append(b)
+            m = current_pointing[0]
+            b = current_pointing[1]
+            previous = self.possibility_of_data_given_model(m, b)
+            
+            # draw form distribution for interval
+            # change the m and b 
+            aftter_pointing = [np.random.normal(m, m_std), np.random.normal(b, b_std)]
+            after = self.possibility_of_data_given_model(aftter_pointing[0], aftter_pointing[1])
+            
+            # acceptance prob
+            acceptance_prob = np.min([1.0, previous/after])
 
-    print("Metropolis fasting complete")
-    return m, b, m_array, b_array
+            if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
+                # if accept
+                aftter_pointing_tuple = tuple(aftter_pointing)
+                if aftter_pointing_tuple in counts:
+                    counts[aftter_pointing_tuple] += 1
+                else:
+                    counts[aftter_pointing_tuple] = 1
+                current_pointing = aftter_pointing 
+            else:
+                current_pointing_tuple = tuple(current_pointing)
+                if current_pointing_tuple in counts:
+                    counts[current_pointing_tuple] += 1
+                else:
+                    counts[current_pointing_tuple] = 1
 
-# finding max in counts dict
-def find_max(counts):
-    curr_max = 0
-    position = []
-    for key in counts.keys():
-        frequency = counts[key]
-        if frequency > curr_max:
-            position = key
-            curr_max = frequency
-    return position, curr_max
+        print("Metropolis fasting complete")
+        return current_pointing, counts
 
-# start metroplolis hasting, took around 1h 30 min
-start_pointing = np.array((2.0, 5.0))
-curr_pointing, counts = metropolis_hasting_dict(start_pointing) # dictionary
-m, b, m_array, b_array = metropolis_hasting_list(start_pointing[0], start_pointing[1]) # array
-position, curr_max = find_max(counts)
-print(position, curr_max)
+    def metropolis_hasting_init(self, m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8, walker = 10):
+        
+        tracktor_upper_limit /= walker
+        with concurrent.futures.ProcessPoolExecutor() as executor:
 
-# works with list
-def index_data_plot(data):
-    # Plotting the graph
-    plt.plot(data)
+            results = [executor.submit(self.metropolis_hasting_list, m, b, m_array, b_array, m_std, b_std, int(tracktor_upper_limit)) for _ in range(walker)]
 
-    # Adding labels to the axes
-    plt.xlabel('Index')
-    plt.ylabel('Data')
+            final_m_array, final_b_array = [], []
+            for f in concurrent.futures.as_completed(results):
+                m_array, b_array = f.result()
+                final_m_array = np.append(final_m_array, m_array)
+                final_b_array = np.append(final_b_array, b_array)
 
-    # Adding a title to the plot
-    plt.title('Index vs Data')
+        return final_m_array, final_b_array
 
-    # Display the plot
-    plt.show()
 
-start_pointing = [2.416905312902787, 3.9074407035248218]
-start_pointing = [2.265298944242751, 4.522759175246534]
+    # metropolis-hasting, array way
+    def metropolis_hasting_list(self, m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8):
 
-def linear_model(x, m = start_pointing[0], b = start_pointing[1]):
-    return m*x + b
+        for _ in tqdm(range(tracktor_upper_limit), desc="Processing items"):
+            
+            previous = self.possibility_of_data_given_model(m, b)
+            
+            # draw form distribution for interval
+            # change the m and b 
+            after_m = np.random.normal(m, m_std)
+            after_b = np.random.normal(b, b_std)
+            after = self.possibility_of_data_given_model(after_m, after_b)
+            
+            # acceptance prob
+            acceptance_prob = np.min([1.0, previous/after])
 
-# Plotting with error bars
-plt.errorbar(x, y, yerr=yerr, fmt='o', label='Data with Error Bars')
-x_fit = np.linspace(min(x), max(x), 100)
-y_fit = linear_model(x_fit)
-plt.plot(x_fit, y_fit, label='Fit', color='red')
+            if np.random.rand() <= acceptance_prob:
+                # if accept
+                m = after_m
+                b = after_b
+                
+            m_array.append(m)
+            b_array.append(b)
 
-# Adding labels and title
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Plot with Error Bars')
+        print("Metropolis fasting complete")
+        return m_array, b_array
 
-# Displaying legend
-plt.legend()
+    # finding max in counts dict
+    def find_max(self, counts):
+        curr_max = 0
+        position = []
+        for key in counts.keys():
+            frequency = counts[key]
+            if frequency > curr_max:
+                position = key
+                curr_max = frequency
+        return position, curr_max
 
-# Display the plot
-plt.show()
+    # start metroplolis hasting, took around 1h 30 min
+    # works with list
+    def index_data_plot(self, data1, data2):
 
+        plt.figure()
+
+        # Subplot 1 (top)
+        plt.subplot(2, 1, 1)
+        plt.plot(data1)
+        # Adding labels to the axes
+        plt.xlabel('Index')
+        plt.ylabel('Data')
+        # Adding a title to the plot
+        plt.title('M')
+
+        # Subplot 2 (bottom)
+        plt.subplot(2, 1, 2)
+        plt.plot(data2)
+        plt.xlabel('Index')
+        plt.ylabel('Data')
+        plt.title('B')
+
+        # Display the plot
+        plt.show()
+
+    def linear_model(self, x):
+        
+        return self.start_pointing[0]*x + self.start_pointing[1]
+
+    def model_fit(self):
+        # Plotting with error bars
+        plt.errorbar(self.x, self.y, yerr=self.yerr, fmt='o', label='Data with Error Bars')
+        x_fit = np.linspace(min(self.x), max(self.x), 100)
+        y_fit = self.linear_model(x_fit)
+        plt.plot(x_fit, y_fit, label='Fit', color='red')
+
+        # Adding labels and title
+        plt.xlabel('X-axis')
+        plt.ylabel('Y-axis')
+        plt.title('Plot with Error Bars')
+
+        # Displaying legend
+        plt.legend()
+
+        # Display the plot
+        plt.show()
+        
+    def main(self, tracktor_upper_limit = 10 ** 8):
+        return self.metropolis_hasting_init(self.start_pointing[0], self.start_pointing[1], tracktor_upper_limit=tracktor_upper_limit)
+        
+if __name__ == "__main__":
+    # for a spec issue that comes up 
+    __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
+    chain = MCMC()
+    final_m_array, final_b_array = chain.main(tracktor_upper_limit = 10 ** 8)
+    
 
 
 
