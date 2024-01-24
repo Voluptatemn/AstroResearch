@@ -158,6 +158,7 @@ m, b, m_array, b_array = metropolis_hasting(start_pointing[0], start_pointing[1]
 position, curr_max = find_max(counts)
 print(position, curr_max)
 
+# works with list
 def index_data_plot(data):
     # Plotting the graph
     plt.plot(data)
