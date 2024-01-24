@@ -3,7 +3,7 @@ from decimal import Decimal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from tqdm import tqdm
-import threading
+import concurrent.futures
 
 # reading the data, can be directly written in. 
 x = []
@@ -77,7 +77,7 @@ def posterior_space_visualization():
     plt.show()
 
 # metropolis-hasting, dictionary way
-def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting_dict(start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
 
     current_pointing = start_pointing
     
@@ -113,10 +113,15 @@ def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, trackt
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-# metropolis-hasting, array way
-def metropolis_hasting(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8):
+def metropolis_hasting_init(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8, walker = 10):
+    
+    return
 
-    for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
+
+# metropolis-hasting, array way
+def metropolis_hasting_list(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8):
+
+    for _ in tqdm(range(tracktor_upper_limit), desc="Processing items"):
         
         previous = possibility_of_data_given_model(m, b)
         
@@ -153,8 +158,8 @@ def find_max(counts):
 
 # start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
-curr_pointing, counts = metropolis_hasting(start_pointing) # dictionary
-m, b, m_array, b_array = metropolis_hasting(start_pointing[0], start_pointing[1]) # array
+curr_pointing, counts = metropolis_hasting_dict(start_pointing) # dictionary
+m, b, m_array, b_array = metropolis_hasting_list(start_pointing[0], start_pointing[1]) # array
 position, curr_max = find_max(counts)
 print(position, curr_max)
 
