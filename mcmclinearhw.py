@@ -8,9 +8,7 @@ class MCMC:
 
     def __init__(self):
         self.read_data()
-        self.start_pointing = [2.416905312902787, 3.9074407035248218]
-        self.start_pointing_1 = [2.265298944242751, 4.522759175246534]
-        self.start_pointing_2 = [2.576172170927121, 3.0199720233240477]
+        self.start_pointing = [2.4917059853078456, 3.2155451588701913]
 
     def read_data(self):
         # reading the data, can be directly written in. 
@@ -54,7 +52,7 @@ class MCMC:
     def possibility_of_data_given_model(self, m, b):
         
         y_model = self.x * m + b
-        return -1/2 * np.sum(((self.y - y_model) ** 2) / (self.yerr ** 2))
+        return np.e ** (-1/2 * np.sum(((self.y - y_model) ** 2) / (self.yerr ** 2)))
 
     # posterior space visualization
     def posterior_space_visualization(self):
@@ -121,6 +119,7 @@ class MCMC:
         print("Metropolis fasting complete")
         return current_pointing, counts
 
+    # parrellal run attempt
     def metropolis_hasting_init(self, m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8, walker = 10):
         
         tracktor_upper_limit /= walker
@@ -151,7 +150,7 @@ class MCMC:
             after = self.possibility_of_data_given_model(after_m, after_b)
             
             # acceptance prob
-            acceptance_prob = np.min([1.0, previous/after])
+            acceptance_prob = np.min([1.0, after/previous])
 
             if np.random.rand() <= acceptance_prob:
                 # if accept
