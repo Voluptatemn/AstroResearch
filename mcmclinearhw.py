@@ -3,6 +3,7 @@ from decimal import Decimal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from tqdm import tqdm
+import threading
 
 # reading the data, can be directly written in. 
 x = []
@@ -44,11 +45,9 @@ def plot_error(x, y, yerr):
 
 def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr):
     
-    sum = 0
-    for j in range (len(y)):
-        sum += ((y[j] - (m * x[j] + b)) ** 2) / (yerr[j] ** 2)
-    return -1/2 * sum
-    
+    y_model = x * m + b
+    return -1/2 * np.sum(((y - y_model) ** 2) / (yerr ** 2))
+
 # posterior space visualization
 def posterior_space_visualization():
 
@@ -114,35 +113,35 @@ def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, trackt
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting(start_pointing, m_array = [], b_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
-
-    current_pointing = start_pointing
+def metropolis_hasting_init(start_pointing, tracktor_upper_limit = 10 ** 8, walker_count = 10):
     
+    tracktor_upper_limit / 10 
+
+def metropolis_hasting(m, b, m_array = [], b_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8, walker_count = 10):
+
     for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
         
-        m = current_pointing[0]
-        b = current_pointing[1]
         previous = possibility_of_data_given_model(m, b)
         
         # draw form distribution for interval
         # change the m and b 
-        after_pointing = [np.random.normal(m, m_std), np.random.normal(b, b_std)]
-        after = possibility_of_data_given_model(after_pointing[0], after_pointing[1])
+        after_m = np.random.normal(m, m_std)
+        after_b = np.random.normal(b, b_std)
+        after = possibility_of_data_given_model(after_m, after_b)
         
         # acceptance prob
         acceptance_prob = np.min([1.0, previous/after])
 
         if np.random.choice([True, False], p=[acceptance_prob, 1-acceptance_prob]):
             # if accept
-            m_array.append(after_pointing[0]) 
-            b_array.append(after_pointing[1])
-            current_pointing = after_pointing 
-        else:
-            m_array.append(m)
-            b_array.append(b)
+            m = after_m
+            b = after_b
+            
+        m_array.append(m)
+        b_array.append(b)
 
     print("Metropolis fasting complete")
-    return current_pointing, m_array, b_array
+    return m, b, m_array, b_array
 
 # finding max in counts dict
 def find_max(counts):
@@ -158,7 +157,7 @@ def find_max(counts):
 # start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
 curr_pointing, counts = metropolis_hasting(start_pointing)
-current_pointing, m_array, b_array = metropolis_hasting(start_pointing)
+m, b, m_array, b_array = metropolis_hasting(start_pointing[0], start_pointing[1])
 position, curr_max = find_max(counts)
 print(position, curr_max)
 
