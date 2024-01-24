@@ -10,7 +10,7 @@ x = []
 y = []
 yerr = []
 
-with open('linear_data', 'r') as file:
+with open('/Users/qiangangsamwang/Documents/GitHub/AstroResearch/linear_data', 'r') as file:
      for line in file:
         data = [float(Decimal(number)) for number in line.split()]
         x.append(data[0])
@@ -46,7 +46,7 @@ def plot_error(x, y, yerr):
 def possibility_of_data_given_model(m, b, x = x, y = y, yerr = yerr):
     
     y_model = x * m + b
-    return -1/2 * np.sum(((y - y_model) ** 2) / (yerr ** 2))
+    return -1/2 * np.sum(((y - y_model) ** 2) / (yerr ** 2) + 2 * np.log(yerr*np.sqrt(2 * np.pi)))
 
 # posterior space visualization
 def posterior_space_visualization():
@@ -76,7 +76,7 @@ def posterior_space_visualization():
     # Display the plot
     plt.show()
 
-# metropolis-hasting
+# metropolis-hasting, dictionary way
 def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8):
 
     current_pointing = start_pointing
@@ -113,11 +113,8 @@ def metropolis_hasting(start_pointing, counts = {}, m_std = 1, b_std = 1, trackt
     print("Metropolis fasting complete")
     return current_pointing, counts
 
-def metropolis_hasting_init(start_pointing, tracktor_upper_limit = 10 ** 8, walker_count = 10):
-    
-    tracktor_upper_limit / 10 
-
-def metropolis_hasting(m, b, m_array = [], b_array = [], m_std = 1, b_std = 1, tracktor_upper_limit = 10 ** 8, walker_count = 10):
+# metropolis-hasting, array way
+def metropolis_hasting(m, b, m_array = [], b_array = [], m_std = 0.1, b_std = 0.1, tracktor_upper_limit = 10 ** 8):
 
     for i in tqdm(range(tracktor_upper_limit), desc="Processing items"):
         
@@ -156,8 +153,8 @@ def find_max(counts):
 
 # start metroplolis hasting, took around 1h 30 min
 start_pointing = np.array((2.0, 5.0))
-curr_pointing, counts = metropolis_hasting(start_pointing)
-m, b, m_array, b_array = metropolis_hasting(start_pointing[0], start_pointing[1])
+curr_pointing, counts = metropolis_hasting(start_pointing) # dictionary
+m, b, m_array, b_array = metropolis_hasting(start_pointing[0], start_pointing[1]) # array
 position, curr_max = find_max(counts)
 print(position, curr_max)
 
@@ -176,6 +173,7 @@ def index_data_plot(data):
     plt.show()
 
 start_pointing = [2.416905312902787, 3.9074407035248218]
+start_pointing = [2.265298944242751, 4.522759175246534]
 
 def linear_model(x, m = start_pointing[0], b = start_pointing[1]):
     return m*x + b
