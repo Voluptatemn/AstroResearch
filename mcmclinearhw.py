@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import concurrent.futures
 
+# author : sw
+# data of submission: 1-24-2024
+# took around 1h for list without parrellal, 16 minutes with
 class MCMC:
 
     def __init__(self):
@@ -174,8 +177,7 @@ class MCMC:
                 curr_max = frequency
         return position, curr_max
 
-    # start metroplolis hasting, took around 1h 30 min
-    # works with list
+    # work with list, show graph of index vs steps
     def index_data_plot(self, data1, data2):
 
         plt.figure()
