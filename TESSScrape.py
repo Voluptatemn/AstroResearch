@@ -3,13 +3,18 @@
 # print(observations)
 # https://astroquery.readthedocs.io/en/latest/mast/mast.html#getting-started 
 # https://mast.stsci.edu/api/v0/pyex.html#tess_searches 
+'''
+Depth > 6ppt, ?   
+9 < Vmag < 16, done 
+Elevation > 30 degrees, done  
+the transit needs to be 90-100% full, ?
+priority >= 3. ?
+'''
 
 import sys
-import os
-import time
-import re
 import json
- 
+from astropy.table import Table
+import numpy as np
 import requests
 from urllib.parse import quote as urlencode
 
@@ -36,7 +41,7 @@ def mast_query(request):
     # Encoding the request as a json string
     req_string = json.dumps(request)
     req_string = urlencode(req_string)
- 
+    
     # Perform the HTTP request
     resp = requests.post(request_url, data="request="+req_string, headers=headers)
  
@@ -46,88 +51,71 @@ def mast_query(request):
  
     return head, content
 
-def download_request(payload, filename, download_type="file"):
-    request_url='https://mast.stsci.edu/api/v0.1/Download/' + download_type
-    resp = requests.post(request_url, data=payload)
- 
-    with open(filename,'wb') as FLE:
-        FLE.write(resp.content)
- 
-    return filename
-
 def set_filters(parameters):
     return [{"paramName":p, "values":v} for p,v in parameters.items()]
 
 def set_min_max(min, max):
     return [{'min': min, 'max': max}]
 
-def mast_json2csv(json):
-    csv_str =  ",".join([x['name'] for x in json['fields']])
-    csv_str += "\n"
-    csv_str += ",".join([x['type'] for x in json['fields']])
-    csv_str += "\n"
- 
-    col_names = [x['name'] for x in json['fields']]
-    for row in json['data']:
-        csv_str += ",".join([str(row.get(col,"nul")) for col in col_names]) + "\n"
- 
-    return csv_str
-
-from astropy.table import Table
-import numpy as np
- 
-def mast_json2table(json_obj):
- 
-    data_table = Table()
- 
-    for col,atype in [(x['name'],x['type']) for x in json_obj['fields']]:
-        if atype=="string":
-            atype="str"
-        if atype=="boolean":
-            atype="bool"
-        data_table[col] = np.array([x.get(col,None) for x in json_obj['data']],dtype=atype)
- 
-    return data_table
-
-def resolve_name():
- 
-    request = {'service':'Mast.Name.Lookup',
-               'params':{'input':'M101',
-                         'format':'json'},
-    }
- 
-    headers, out_string = mast_query(request)
- 
-    out_data = json.loads(out_string)
- 
-    return out_data
-
-def list_caom_missions():
- 
-    request = {
-        'service':'Mast.Missions.List',
-        'params':{},
-        'format':'json'
-    }
- 
-    headers, out_string = mast_query(request)
- 
-    out_data = [x['distinctValue'] for x in json.loads(out_string)['data']]
- 
-    return out_data
+filter = {
+    "dec" : set_min_max(30, 90),
+    "Vmag": set_min_max(9, 16),
+    "priority": set_min_max(0.003, 1000),
+                
+}
 
 def tic_advanced_search():
-    filts = set_filters({
-                "dec" : set_min_max(-90, -30),
-                "Teff" : set_min_max(4250, 4500),
-                "logg" : set_min_max(4.4, 5.0),
-                "Tmag" : set_min_max(8, 10)
-            })
+    filts = set_filters(filter)
  
     request = {"service":"Mast.Catalogs.Filtered.Tic",
                "format":"json",
                "params":{
                    "columns":"COUNT_BIG(*)",
+                   "filters": filts
+               }}
+ 
+    headers, out_string = mast_query(request)
+    out_data = json.loads(out_string)
+ 
+    return out_data
+
+def tic_advanced_search_rows():
+    filts = set_filters(filter)
+ 
+    request = {"service":"Mast.Catalogs.Filtered.Tic.Rows",
+               "format":"json",
+               "params":{
+                   "columns":"*",
+                   "filters": filts
+               }}
+ 
+    headers, out_string = mast_query(request)
+    out_data = json.loads(out_string)
+ 
+    return out_data
+
+def ctl_advanced_search():
+    filts = set_filters(filter)
+ 
+    request = {"service":"Mast.Catalogs.Filtered.Ctl",
+               "format":"json",
+               "params":{
+                   "columns": "COUNT_BIG(*)",
+                   "filters":filts
+               }}
+ 
+    headers, out_string = mast_query(request)
+    out_data = json.loads(out_string)
+ 
+    return out_data
+
+def ctl_advanced_search_rows():
+    filts = set_filters(filter)
+ 
+    request = {"service":"Mast.Catalogs.Filtered.Ctl.Rows",
+               "format":"json",
+               "params":{
+                   "columns": "*",
                    "filters": filts
                }}
  
