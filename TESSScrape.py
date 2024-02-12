@@ -124,5 +124,3 @@ def ctl_advanced_search_rows():
     out_data = json.loads(out_string)
  
     return out_data
-
-tic_advanced_search_rows()
