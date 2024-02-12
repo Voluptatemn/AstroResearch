@@ -9,6 +9,7 @@ Depth > 6ppt, ?
 Elevation > 30 degrees, done  
 the transit needs to be 90-100% full, ?
 priority >= 3. ?
+https://mast.stsci.edu/api/v0/_t_i_cfields.html
 '''
 
 import sys
@@ -60,7 +61,7 @@ def set_min_max(min, max):
 filter = {
     "dec" : set_min_max(30, 90),
     "Vmag": set_min_max(9, 16),
-    "priority": set_min_max(0.003, 1000),
+    # "priority": set_min_max(0.003, 1000),
                 
 }
 
@@ -123,3 +124,5 @@ def ctl_advanced_search_rows():
     out_data = json.loads(out_string)
  
     return out_data
+
+tic_advanced_search_rows()
