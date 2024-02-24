@@ -14,10 +14,14 @@ ref_counts = [5619, 2364, 27397, 9500, 11008]
 ref_mags = [14.17, 15.11, 12.45, 13.60, 13.44] 
 
 targ_flux = []
+targ_mag = []
 for i in range (len(ref_counts)):
+    targ_mag.append(finding_targ_magnitude(targ_count, ref_counts[i], ref_mags[i]))
     targ_flux.append(jy_to_W(mag_to_flux(finding_targ_magnitude(targ_count, ref_counts[i], ref_mags[i]))))
 targ_flux = np.array(targ_flux)
 print(np.mean(targ_flux), np.std(targ_flux))
+targ_mag = np.array(targ_mag)
+print(np.mean(targ_mag), np.std(targ_mag))
 
 Aeff = np.pi * np.power((0.7/2), 2)
 c = 299792458
